@@ -3,8 +3,8 @@ ODP: Exploration for Random Objects Using Distance Profiles
 
 This package provides tools for exploratory data analysis of random objects lying in metric spaces, including distance profiles, transport ranks, object MDS plots, and profile MDS plots.
 
-Reference: Dubey, P.$^*$, Chen, Y.$^*$ & Müller, H.-G. (2022). Metric statistics: Exploration and inference for random objects with distance profiles <doi:10.48550/arXiv.2202.06117>.
-$^*$: equally contributed to the paper.
+Reference: Dubey, P.\*, Chen, Y.\* & Müller, H.-G. (2022). Metric statistics: Exploration and inference for random objects with distance profiles <doi:10.48550/arXiv.2202.06117>.  
+\*: contributed equally to the paper.
 
 ## Installation of the current development version
 You can install the development version of the package in R using:
