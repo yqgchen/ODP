@@ -1,0 +1,9 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.travis\.yml$
+^ISSUE_TEMPLATE\.md$
+^tests$
+^cran-comments\.md$
+^\.gitignore$
+^inst/testdata$
+^README\.md$

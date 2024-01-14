@@ -1,0 +1,36 @@
+Package: ODP
+Title: Exploration for Random Objects Using Distance Profiles
+URL: https://github.com/yqgchen/ODP
+BugReports: https://github.com/yqgchen/ODP/issues
+Version: 0.1.0
+Date: 2024-01-09
+Authors@R: c(
+    person(given = "Yaqing",
+           family = "Chen",
+           role = c("aut", "cre"),
+           email = "yqchen@stat.rutgers.edu"), 
+    person(given = "Paromita",
+           family = "Dubey",
+           role = c("aut"),
+           email = "paromita@usc.edu"), 
+    person(given = "Hans-Georg",
+           family = "Müller",
+           role = c("aut"),
+           email = "hgmueller@ucdavis.edu"))
+Maintainer: Yaqing Chen <yqchen@stat.rutgers.edu>
+Description: Provides tools for exploratory data analysis of random objects lying in metric spaces. 
+  References: Dubey, P., Chen, Y. & Müller, H.-G. (2022) <doi:10.48550/arXiv.2202.06117>.
+License: BSD_3_clause + file LICENSE
+Encoding: UTF-8
+LazyData: false
+Imports:
+    frechet,
+    ggplot2,
+    ggrepel,
+    grDevices,
+    pracma,
+    stats,
+    utils
+Suggests: 
+    testthat
+RoxygenNote: 7.2.3
