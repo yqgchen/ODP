@@ -159,18 +159,7 @@ GetDistPrfl <- function ( distmat, data, distfun = NULL, newdata = NULL, type = 
   }
   
   if ( type %in% c('cdf','all') ) {
-    ## empirical cdf
-    getEDF <- function (x, sup) {
-      len <- length(x)
-      edf <- list(
-        x = sup,
-        y = colMeans(
-          matrix( x, ncol = length(sup), nrow = len ) -
-            matrix( sup, ncol = length(sup), nrow = len, byrow = TRUE ) <= 0
-        )
-      )
-      return (edf)
-    }
+    
     if ( is.null(optns$outputGrid) ) {
       if ( is.null(optns$nRegGrid) ) {
         optns$nRegGrid <- 101
@@ -182,25 +171,25 @@ GetDistPrfl <- function ( distmat, data, distfun = NULL, newdata = NULL, type = 
         seq(ran[1], ran[2], len = len)
       }
       cdf <- lapply( seq_len(n), function(i) {
-        getEDF( x = distmat[i,-i], sup = setSup( x = distmat[i,-i], len = optns$nRegGrid ) )
+        GetEDF( x = distmat[i,-i], sup = setSup( x = distmat[i,-i], len = optns$nRegGrid ), returnSup = TRUE )
       })
       if ( m > 0 ) {
         cdf <- c(
           cdf,
           lapply(seq_len(m)+n, function(i) {
-            getEDF( x = distmat[i,], sup = setSup( x = distmat[i,], len = optns$nRegGrid ) )
+            GetEDF( x = distmat[i,], sup = setSup( x = distmat[i,], len = optns$nRegGrid ), returnSup = TRUE )
           })
         )
       }
     } else {
       cdf <- lapply( seq_len(n), function(i) {
-        getEDF( x = distmat[i,-i], sup = optns$outputGrid )
+        GetEDF( x = distmat[i,-i], sup = optns$outputGrid, returnSup = TRUE )
       })
       if ( m > 0 ) {
         cdf <- c(
           cdf,
           lapply(seq_len(m)+n, function(i) {
-            getEDF( x = distmat[i,], sup = optns$outputGrid )
+            GetEDF( x = distmat[i,], sup = optns$outputGrid, returnSup = TRUE )
           })
         )
       }
@@ -222,35 +211,17 @@ GetDistPrfl <- function ( distmat, data, distfun = NULL, newdata = NULL, type = 
     if ( is.null(optns$nqSup) ) optns$nqSup <- 101
     if ( is.null(optns$qSup) ) optns$qSup <- seq(0,1,length.out = optns$nqSup)
     
-    ## empirical quantile function
-    getEQF <- function (x, qSup) {
-      len <- length(x)
-      x.sorted <- sort(x)
-      if ( any( qSup > 1 ) ) {
-        qSup[ qSup > 1 ] <- 1
-      }
-      eqf <- numeric( length(qSup) )
-      eqf[ qSup > 0 ] <- x.sorted[ ceiling( qSup[ qSup > 0 ] * len ) ]
-      # if ( any( qSup == 0 ) ) {
-      #   extrapolated <- x.sorted[1] - ( x.sorted[len] - x.sorted[1] ) / ( length(qSup) - 1 ) / 2
-      #   eqf[ which( qSup == 0 ) ] <- max( 0, eqf[ which( qSup == 0 ) ] )
-      # }
-      if ( any( qSup == 0 ) ) {
-        eqf[ which( qSup == 0 ) ] <- x.sorted[1]
-      }
-      return (eqf)
-    }
     qf <- list(
       x = optns$qSup,
       ymat = t( sapply( seq_len(n), function(i) {
-        getEQF( x = distmat[i,-i], qSup = optns$qSup )
+        GetEQF( x = distmat[i,-i], qSup = optns$qSup, returnSup = FALSE )
       }) )
     )
     if ( m > 0 ) {
       qf$ymat <- rbind(
         qf$ymat,
         t(sapply( seq_len(m)+n, function(i) {
-          getEQF( x = distmat[i,], qSup = optns$qSup )
+          GetEQF( x = distmat[i,], qSup = optns$qSup, returnSup = FALSE )
         }))
       )
     }

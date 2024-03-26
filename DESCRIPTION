@@ -2,8 +2,8 @@ Package: ODP
 Title: Exploration for Random Objects Using Distance Profiles
 URL: https://github.com/yqgchen/ODP
 BugReports: https://github.com/yqgchen/ODP/issues
-Version: 0.1.0
-Date: 2024-01-09
+Version: 0.1.1
+Date: 2024-03-26
 Authors@R: c(
     person(given = "Yaqing",
            family = "Chen",

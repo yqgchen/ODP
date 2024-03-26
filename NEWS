@@ -1,0 +1,13 @@
+
+frechet v0.1.1 (Release date: 26-Mar-2024)
+=============
+Changes:
+* Added GetEDF() and GetEQF(), with faster computation for empirical distribution functions and empirical quantile functions.
+
+Minors:
+* Updated GetDistPrfl() using GetEDF() and GetEQF().
+
+
+ODP v0.1.0 (Release date: 09-Jan-2024)
+============
+* Initial release
