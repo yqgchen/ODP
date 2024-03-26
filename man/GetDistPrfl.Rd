@@ -42,7 +42,7 @@ This can only be specified if \code{data} but not \code{distmat} is given.}
 \code{'qf'} (default) for quantile functions,
 and \code{'all'} for all of the three aforementioned types.}
 
-\item{optns}{A list of options control parameters specified by \code{list(name=value)}. See 'Details'.}
+\item{optns}{A list of control parameters specified by \code{list(name=value)}. See 'Details'.}
 
 \item{...}{Optional arguments of \code{distfun}.}
 }

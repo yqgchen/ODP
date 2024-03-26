@@ -26,7 +26,7 @@
 #' \code{'cdf'} for cumulative distribution functions,
 #' \code{'qf'} (default) for quantile functions,
 #' and \code{'all'} for all of the three aforementioned types.
-#' @param optns A list of options control parameters specified by \code{list(name=value)}. See 'Details'.
+#' @param optns A list of control parameters specified by \code{list(name=value)}. See 'Details'.
 #' @param ... Optional arguments of \code{distfun}.
 #' @details Cumulative distribution function and quantile function representations of 
 #' distance profiles are obtained as the right-continuous empirical distribution functions 
