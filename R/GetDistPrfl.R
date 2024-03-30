@@ -47,18 +47,18 @@
 #' @return A list. All three fields \code{den} (for the densities), \code{cdf} (for the cdfs) 
 #' and \code{qf} (for the quantile functions) will be included if \code{type == 'all'}, 
 #' and the corresponding field alone out of the three otherwise.
-#' \item{den}{A list of \eqn{n} or \eqn{(n+m)} fields if \code{optns$outputGrid} is specified, 
+#' \item{den}{A list of \eqn{n} or \eqn{(n+m)} fields if \code{optns$outputGrid} is unspecified, 
 #' each of which is a list of three fields, \code{bw}, \code{x} and \code{y}; 
 #' see 'Value' of \code{\link[frechet]{CreateDensity}} for further details.
-#' If \code{optns$outputGrid} is unspecified, 
+#' If \code{optns$outputGrid} is specified, 
 #' it is a list of three fields, \code{bwvec}, \code{x} and \code{ymat}, where 
 #' \code{bwvec} is a vector of length \eqn{n} or \eqn{(n+m)} holding the bandwidths used for smoothing,
 #' \code{x} is the (common) support grid of the \eqn{n} or \eqn{(n+m)} densities specified by \code{optns$outputGrid}, 
 #' and \code{ymat} is a matrix with \eqn{n} or \eqn{(n+m)} rows, each row holding the values of the density for one subject.}
-#' \item{cdf}{A list of \eqn{n} or \eqn{(n+m)} fields if \code{optns$outputGrid} is specified, 
+#' \item{cdf}{A list of \eqn{n} or \eqn{(n+m)} fields if \code{optns$outputGrid} is unspecified, 
 #' each of which is a list of two fields, \code{x} and \code{y}, 
 #' which are two vectors holding the support grid and the corresponding values of the cdf, respectively.
-#' If \code{optns$outputGrid} is unspecified, 
+#' If \code{optns$outputGrid} is specified, 
 #' it is a list of two fields, \code{x} and \code{ymat}, where 
 #' \code{x} is the (common) support grid of the \eqn{n} or \eqn{(n+m)} cdfs specified by \code{optns$outputGrid}, 
 #' and \code{ymat} is a matrix with \eqn{n} or \eqn{(n+m)} rows, each row holding the values of the cdf for one subject.}
@@ -182,14 +182,14 @@ GetDistPrfl <- function ( distmat, data, distfun = NULL, newdata = NULL, type = 
         )
       }
     } else {
-      cdf <- lapply( seq_len(n), function(i) {
-        GetEDF( x = distmat[i,-i], sup = optns$outputGrid, returnSup = TRUE )
+      cdf <- sapply( seq_len(n), function(i) {
+        GetEDF( x = distmat[i,-i], sup = optns$outputGrid, returnSup = FALSE )
       })
       if ( m > 0 ) {
-        cdf <- c(
+        cdf <- cbind(
           cdf,
-          lapply(seq_len(m)+n, function(i) {
-            GetEDF( x = distmat[i,], sup = optns$outputGrid, returnSup = TRUE )
+          sapply(seq_len(m)+n, function(i) {
+            GetEDF( x = distmat[i,], sup = optns$outputGrid, returnSup = FALSE )
           })
         )
       }
@@ -198,7 +198,7 @@ GetDistPrfl <- function ( distmat, data, distfun = NULL, newdata = NULL, type = 
     if ( !is.null(optns$outputGrid) ) {
       cdf <- list(
         x = optns$outputGrid,
-        ymat = t(sapply(cdf, function(d) d$y))
+        ymat = t(cdf)
       )
     }
     
