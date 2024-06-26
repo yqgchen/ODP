@@ -38,4 +38,4 @@ A BibTeX entry for LaTeX users is
 
 ## Acknowledgment
 
-The development of this package has been supported by NSF grant DMS-2311035 (YC). 
+The development of this package has been supported by NSF grants DMS-2311034 (PD) and DMS-2311035 (YC). 
