@@ -1,0 +1,13 @@
+\contentsline {subsection}{CheckDistmat}{2}{page.2}
+\contentsline {subsection}{expit}{2}{page.2}
+\contentsline {subsection}{GetDistPrfl}{3}{page.3}
+\contentsline {subsection}{GetEDF}{5}{page.5}
+\contentsline {subsection}{GetEQF}{5}{page.5}
+\contentsline {subsection}{GetPairDist}{6}{page.6}
+\contentsline {subsection}{GetPrflHomTestStat}{7}{page.7}
+\contentsline {subsection}{GetTpRank}{7}{page.7}
+\contentsline {subsection}{GetTpRankFromDistPrfl}{9}{page.9}
+\contentsline {subsection}{l2metric}{10}{page.10}
+\contentsline {subsection}{MakeObjMdsPlot}{11}{page.11}
+\contentsline {subsection}{MakePrflMdsPlot}{12}{page.12}
+\contentsline {subsection}{prflHomTest}{13}{page.13}

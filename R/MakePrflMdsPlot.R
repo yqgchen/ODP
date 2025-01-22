@@ -39,7 +39,7 @@ MakePrflMdsPlot <- function ( qDistPrfl, color_by, nGroup, ... ) {
   n <- nrow( qDistPrfl$ymat )
   
   if ( missing(color_by) ) {
-    color_by <- GetTpRankFromDistPrfl( qDistPrfl = qDistPrfl, n = n, fun = expit )$rank
+    color_by <- GetTpRankFromDistPrfl( qDistPrfl = qDistPrfl, n = n, fun = expit )
   }
   
   if ( missing(nGroup) ) {

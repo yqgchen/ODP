@@ -1,0 +1,770 @@
+\nonstopmode{}
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\usepackage[utf8]{inputenc} % @SET ENCODING@
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `ODP'}}
+\par\bigskip{\large \today}
+\end{center}
+\inputencoding{utf8}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdftitle = {ODP: Exploration for Random Objects Using Distance Profiles}}}{}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdfauthor = {Yaqing Chen; Paromita Dubey; Hans-Georg Müller}}}{}
+\begin{description}
+\raggedright{}
+\item[Title]\AsIs{Exploration for Random Objects Using Distance Profiles}
+\item[URL]\AsIs{}\url{https://github.com/yqgchen/ODP}\AsIs{}
+\item[BugReports]\AsIs{}\url{https://github.com/yqgchen/ODP/issues}\AsIs{}
+\item[Version]\AsIs{0.1.1}
+\item[Date]\AsIs{2024-03-26}
+\item[Maintainer]\AsIs{Yaqing Chen }\email{yqchen@stat.rutgers.edu}\AsIs{}
+\item[Description]\AsIs{Provides tools for exploratory data analysis of random objects lying in metric spaces. 
+References: Dubey, P., Chen, Y. & Müller, H.-G. (2022) <}\Rhref{https://doi.org/10.48550/arXiv.2202.06117}{doi:10.48550/arXiv.2202.06117}\AsIs{>.}
+\item[License]\AsIs{BSD_3_clause + file LICENSE}
+\item[Encoding]\AsIs{UTF-8}
+\item[LazyData]\AsIs{false}
+\item[Imports]\AsIs{frechet,
+ggplot2,
+ggrepel,
+grDevices,
+pracma,
+stats,
+utils}
+\item[Suggests]\AsIs{testthat}
+\item[RoxygenNote]\AsIs{7.2.3}
+\end{description}
+\Rdcontents{\R{} topics documented:}
+\inputencoding{utf8}
+\HeaderA{CheckDistmat}{Check distance matrices}{CheckDistmat}
+%
+\begin{Description}\relax
+Check whether the input distance matrix or its sub square matrix is symmetric 
+and has zero diagonals.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+CheckDistmat(distmat)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{distmat}] An \eqn{n}{}-by-\eqn{n}{} matrix holding the pairwise distances between observations.
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
+\HeaderA{expit}{Expit function}{expit}
+%
+\begin{Description}\relax
+Compute the value of \eqn{\exp(x)/(1 + \exp(x))}{} for given \eqn{x}{}.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+expit(x)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A vector holding the real valued input.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A vector holding the result.
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{GetDistPrfl}{Compute distance profiles with respect to a sample of random objects}{GetDistPrfl}
+%
+\begin{Description}\relax
+Compute the distribution of \eqn{d(x,X)}{} for given \eqn{x}{}. 
+For \eqn{x = X_i}{} within the training data \eqn{\{X_i\}_{i=1}^{n}}{}, 
+the distribution of \eqn{d(x,X)}{} is estimated based on \eqn{\{d(x,X_j)\}_{j\neq i}}{}.
+For a new \eqn{x}{} out of the training data, 
+the distribution of \eqn{d(x,X)}{} is estimated based on \eqn{\{d(x,X_j)\}_{j=1}^{n}}{}.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+GetDistPrfl(
+  distmat,
+  data,
+  distfun = NULL,
+  newdata = NULL,
+  type = "qf",
+  optns = list(),
+  ...
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{distmat}] An \eqn{(n+m)}{}-by-\eqn{n}{} matrix holding the pairwise distances between observations 
+in training data of size \eqn{n}{} and possibly new data of size \eqn{m}{} to the training data.
+If there is no new data of interest, then \code{distmat} should be a symmetric matrix of dimension \eqn{n}{}. 
+At least one of \code{data} and \code{distmat} should be input. 
+If both are given, \code{distmat} overrides \code{data}.
+
+\item[\code{data}] Training data with respect to the law of which distance profiles are of interest. 
+Either a matrix or data frame with \eqn{n}{} rows where each row holds one observation 
+in the training data, or a list (but not a data frame) of length \eqn{n}{} where each element holds one observation.
+
+\item[\code{distfun}] A function with two arguments computing the distance between two observations, 
+which is used in \code{\LinkA{GetPairDist}{GetPairDist}}. Default: Euclidean distance.
+
+\item[\code{newdata}] Optional new data, at which distance profiles are to be computed 
+with respect to the law of \code{data}. 
+Either a matrix or data frame with \eqn{m}{} rows and the same number of columns as \code{data} 
+where each row holds one new observation in addition to the observations in \code{data}. 
+or a list (but not a data frame) of length \eqn{m}{} where each element is of the same format as those in \code{data} 
+and holds one new observation. 
+This can only be specified if \code{data} but not \code{distmat} is given.
+
+\item[\code{type}] Character specifying the type of results to be computed:
+\code{'den'} for densities,
+\code{'cdf'} for cumulative distribution functions,
+\code{'qf'} (default) for quantile functions,
+and \code{'all'} for all of the three aforementioned types.
+
+\item[\code{optns}] A list of control parameters specified by \code{list(name=value)}. See 'Details'.
+
+\item[\code{...}] Optional arguments of \code{distfun}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Cumulative distribution function and quantile function representations of 
+distance profiles are obtained as the right-continuous empirical distribution functions 
+and their left-continuous inverse, respectively. 
+If density representation of distance profiles is of interest 
+(\code{type = 'den'} or \code{type = 'all'}), 
+density estimation is performed using \code{\LinkA{CreateDensity}{CreateDensity}}.
+Available control options are \code{userBwMu}, \code{nRegGrid}, \code{delta}, \code{kernel}, 
+\code{infSupport}, \code{outputGrid}, \code{nqSup} and \code{qSup}. 
+See \code{\LinkA{CreateDensity}{CreateDensity}} for the details about the options 
+other than \code{nqSup} and \code{qSup}.
+\begin{description}
+
+\item[nqSup] The number of equidistant points in the support grid of the quantile functions. 
+Default: 101.
+\item[qSup] The support grid of the quantile functions; it overrides \code{nqSup}. 
+Default: \code{seq(0,1,length.out=optns\$nqSup)}.
+
+\end{description}
+
+\end{Details}
+%
+\begin{Value}
+A list. All three fields \code{den} (for the densities), \code{cdf} (for the cdfs) 
+and \code{qf} (for the quantile functions) will be included if \code{type == 'all'}, 
+and the corresponding field alone out of the three otherwise.
+\begin{ldescription}
+\item[\code{den}] A list of \eqn{n}{} or \eqn{(n+m)}{} fields if \code{optns\$outputGrid} is unspecified, 
+each of which is a list of three fields, \code{bw}, \code{x} and \code{y}; 
+see 'Value' of \code{\LinkA{CreateDensity}{CreateDensity}} for further details.
+If \code{optns\$outputGrid} is specified, 
+it is a list of three fields, \code{bwvec}, \code{x} and \code{ymat}, where 
+\code{bwvec} is a vector of length \eqn{n}{} or \eqn{(n+m)}{} holding the bandwidths used for smoothing,
+\code{x} is the (common) support grid of the \eqn{n}{} or \eqn{(n+m)}{} densities specified by \code{optns\$outputGrid}, 
+and \code{ymat} is a matrix with \eqn{n}{} or \eqn{(n+m)}{} rows, each row holding the values of the density for one subject.
+\item[\code{cdf}] A list of \eqn{n}{} or \eqn{(n+m)}{} fields if \code{optns\$outputGrid} is unspecified, 
+each of which is a list of two fields, \code{x} and \code{y}, 
+which are two vectors holding the support grid and the corresponding values of the cdf, respectively.
+If \code{optns\$outputGrid} is specified, 
+it is a list of two fields, \code{x} and \code{ymat}, where 
+\code{x} is the (common) support grid of the \eqn{n}{} or \eqn{(n+m)}{} cdfs specified by \code{optns\$outputGrid}, 
+and \code{ymat} is a matrix with \eqn{n}{} or \eqn{(n+m)}{} rows, each row holding the values of the cdf for one subject.
+\item[\code{qf}] A list of two fields, \code{x} and \code{ymat}, where 
+\code{x} is a vector holding the (common) support grid of the \eqn{n}{} or \eqn{(n+m)}{} quantile functions, 
+and \code{ymat} is a matrix with \eqn{n}{} or \eqn{(n+m)}{} rows, each row holding the values of the quantile function for one subject.
+\item[\code{n}] The sample size of the training data.
+\item[\code{distmat}] An \eqn{(n+m)}{}-by-\eqn{n}{} matrix holding the pairwise distances between observations 
+in training data of size \eqn{n}{} and possibly new data of size \eqn{m}{} to the training data. 
+This will be output only if \code{data} but not \code{distmat} is given in the input.
+\end{ldescription}
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+d <- 2
+n <- 10
+m <- 5
+data <- matrix( rnorm( n * d ), ncol = d )
+newdata <- matrix( rnorm( m * d ), ncol = d )
+distmat <- as.matrix( stats::dist( rbind(data,newdata) ) )[, 1:n, drop=FALSE]
+## with input distmat
+res <- GetDistPrfl( distmat = distmat )
+## Or with input data and newdata
+res2 <- GetDistPrfl( data = data, newdata = newdata )
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{GetEDF}{Compute empirical distribution functions}{GetEDF}
+%
+\begin{Description}\relax
+For a sample of real-valued random variables \eqn{X_1,\dots,X_n}{}, compute the empirical distribution function 
+\eqn{\hat{F}(x) = \frac{1}{n}\sum_{i=1}^{n} \chi\{X_i\le x\}}{}, 
+where \eqn{\chi\{\cdot\}}{} denotes the indicator function.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+GetEDF(x, sup, returnSup = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A numeric vector holding the data.
+
+\item[\code{sup}] A numeric vector holding the support grid of the empirical distribution function.
+
+\item[\code{returnSup}] Logical; indicating whether \code{sup} is to be returned. Default: \code{FALSE}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A vector holding the empirical distribution function evaluated on \code{sup} 
+if \code{returnSup} is \code{FALSE}; 
+A list containing two fields \code{x} and \code{y} holding the support grid and 
+the values of the empirical distribution function, respectively, 
+if \code{returnSup} is \code{TRUE}.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+x <- runif(50)
+edf <- GetEDF( x = x, sup = seq(0,1,0.01), returnSup = TRUE )
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{GetEQF}{Compute empirical quantile functions}{GetEQF}
+%
+\begin{Description}\relax
+For a sample of real-valued random variables \eqn{X_1,\dots,X_n}{}, compute the empirical quantile function 
+\eqn{\hat{Q}(p) = \inf\{x: \hat{F}(x) \ge p\}}{}, where \eqn{\hat{F}(\cdot)}{} denotes 
+the corresponding empirical distribution function.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+GetEQF(x, qSup, returnSup = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A numeric vector holding the data.
+
+\item[\code{qSup}] A numeric vector holding the support grid of the empirical quantile function.
+
+\item[\code{returnSup}] Logical; indicating whether \code{sup} is to be returned. Default: \code{FALSE}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A vector holding the empirical quantile function evaluated on \code{qSup} 
+if \code{returnSup} is \code{FALSE}; 
+A list containing two fields \code{x} and \code{y} holding the support grid and 
+the values of the empirical quantile function, respectively, 
+if \code{returnSup} is \code{TRUE}.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+x <- runif(50)
+edf <- GetEQF( x = x, qSup = seq(0,1,0.01), returnSup = TRUE )
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{GetPairDist}{Get pairwise distances between observations (data objects)}{GetPairDist}
+%
+\begin{Description}\relax
+Get pairwise distances between observations (data objects)
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+GetPairDist(data, distfun = NULL, newdata = NULL, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{data}] Either a matrix or data frame with \eqn{n}{} rows where each row holds one observation 
+in the (training) data, or a list (but not a data frame) of length \eqn{n}{} where each element holds one observation.
+
+\item[\code{distfun}] A function with (at least) two arguments \code{x} and \code{y} 
+computing the distance between two observations \code{x} and \code{y}. 
+Default: Euclidean distance \code{function (x,y) \{sqrt(sum((x-y)\textasciicircum{}2))\}}.
+
+\item[\code{newdata}] Either a matrix or data frame with \eqn{m}{} rows and the same number of columns as \code{data} 
+where each row holds one new observation in addition to the observations in \code{data}, 
+or a list (but not a data frame) of length \eqn{m}{} where each element is of the same format as those in \code{data} 
+and holds one new observation. 
+Pairwise distances from observations in \code{newdata} to those in \code{data} are to be computed.
+
+\item[\code{...}] Optional additional arguments of \code{distfun}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+An \eqn{(n+m)}{}-by-\eqn{n}{} matrix holding the pairwise distances between observations.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## 2-Wasserstein distance for distributions on the real line
+mu <- 1:4
+qSup <- seq(0,1,len=1001)[-c(1,1001)]
+data <- lapply( mu, qnorm, p = qSup )
+distmat <- GetPairDist( data = data, distfun = l2metric, sup = qSup )
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{GetPrflHomTestStat}{Compute the test statistic of the distance profile based two-sample homogeneity test for random objects}{GetPrflHomTestStat}
+%
+\begin{Description}\relax
+Compute the test statistic of the two-sample test for random objects based on comparing the distance profiles.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+GetPrflHomTestStat(distmat, n, nRegGrid = 101)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{distmat}] An \eqn{(n+m)}{}-by-\eqn{(n+m)}{} matrix holding the pairwise distances between observations 
+in the two samples of sizes \eqn{n}{} and \eqn{m}{}, respectively.
+
+\item[\code{n}] Size of the first sample.
+
+\item[\code{nRegGrid}] Number of equidistant grid points from the minimum to the maximum of all pairwise distances,
+on which the integrals of difference between distance profiles will be taken. Default: 101.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The value of the test statistic.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+n <- m <- 50
+data <- rep( rnorm(n,0,1), 2 )
+distmat <- abs( matrix( data, nr = n+m, nc = n+m ) - matrix( data, nr = n+m, nc = n+m, byrow = TRUE ) )
+stat <- GetPrflHomTestStat( distmat = distmat, n = n )
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{GetTpRank}{Compute transport ranks from a distance matrix or data}{GetTpRank}
+%
+\begin{Description}\relax
+Compute transport ranks based on a distance matrix or data. 
+For \eqn{x = X_i}{} within the training data \eqn{\{X_i\}_{i=1}^{n}}{}, 
+the transport rank of \eqn{x}{} is estimated by comparing the distance profile of \eqn{x}{} with 
+the distance profiles of \eqn{\{X_j\}_{j\neq i}}{}. 
+For a new \eqn{x}{} out of the training data, 
+the transport rank of \eqn{x}{} is estimated by comparing the distance profile of \eqn{x}{} with 
+the distance profiles of \eqn{\{X_j\}_{j=1}^{n}}{}.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+GetTpRank(
+  distmat,
+  data,
+  distfun = NULL,
+  newdata = NULL,
+  output_profile = TRUE,
+  type = "qf",
+  optns = list(),
+  ...
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{distmat}] An \eqn{(n+m)}{}-by-\eqn{n}{} matrix holding the pairwise distances between observations 
+in training data of size \eqn{n}{} and possibly new data of size \eqn{m}{} to the training data.
+If there is no new data of interest, then \code{distmat} should be a symmetric matrix of dimension \eqn{n}{}. 
+At least one of \code{data} and \code{distmat} should be input. 
+If both are given, \code{distmat} overrides \code{data}.
+
+\item[\code{data}] Training data with respect to the law of which distance profiles are of interest. 
+Either a matrix or data frame with \eqn{n}{} rows where each row holds one observation 
+in the training data, or a list (but not a data frame) of length \eqn{n}{} where each element holds one observation.
+
+\item[\code{distfun}] A function with two arguments computing the distance between two observations, 
+which is used in \code{\LinkA{GetPairDist}{GetPairDist}}. Default: Euclidean distance.
+
+\item[\code{newdata}] Optional new data, at which distance profiles are to be computed 
+with respect to the law of \code{data}. 
+Either a matrix or data frame with \eqn{m}{} rows and the same number of columns as \code{data} 
+where each row holds one new observation in addition to the observations in \code{data}. 
+or a list (but not a data frame) of length \eqn{m}{} where each element is of the same format as those in \code{data} 
+and holds one new observation. 
+This can only be specified if \code{data} but not \code{distmat} is given.
+
+\item[\code{output\_profile}] Logical, whether distance profiles need to be returned. Default: \code{TRUE}.
+
+\item[\code{type}] Character specifying the type of representations of distance profiles to be output:
+\code{'qf'} (default) for quantile functions,
+and \code{'all'} for densities, cumulative distribution functions, and quantile functions.
+
+\item[\code{optns}] A list of options control parameters specified by \code{list(name=value)}. See 'Details'.
+
+\item[\code{...}] Optional arguments of \code{distfun}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function is an intergration of integrating \code{\LinkA{GetDistPrfl}{GetDistPrfl}} and \code{\LinkA{GetTpRankFromDistPrfl}{GetTpRankFromDistPrfl}}. 
+Cumulative distribution function and quantile function representations of 
+distance profiles are obtained as the right-continuous empirical distribution functions 
+and their left-continuous inverse, respectively. 
+If density representation of distance profiles is of interest 
+(\code{type = 'den'} or \code{type = 'all'}), 
+density estimation is performed using \code{\LinkA{CreateDensity}{CreateDensity}}.
+Available control options are \code{userBwMu}, \code{nRegGrid}, \code{delta}, \code{kernel}, 
+\code{infSupport}, \code{outputGrid}, \code{nqSup} and \code{qSup}. 
+See \code{\LinkA{CreateDensity}{CreateDensity}} for the details about the options 
+other than \code{nqSup} and \code{qSup}.
+\begin{description}
+
+\item[nqSup] The number of equidistant points in the support grid of the quantile functions. 
+Default: 101.
+\item[qSup] The support grid of the quantile functions; it overrides \code{nqSup}. 
+Default: \code{seq(0,1,length.out = optns\$nqSup)}.
+
+\end{description}
+
+\end{Details}
+%
+\begin{Value}
+A list of the following fields:
+\begin{ldescription}
+\item[\code{rank}] A vector holding the transport ranks.
+\item[\code{n}] The size of the training data.
+\item[\code{profile}] A list of the following:
+\begin{description}
+
+\item[den] Density representations of distance profiles, only returned if \code{type='all'}.
+\item[cdf] Cumulative distribution function representations of distance profiles, only returned if \code{type='all'}.
+\item[qf] Quantile function representations of distance profiles.
+
+\end{description}
+
+\item[\code{distmat}] An \eqn{(n+m)}{}-by-\eqn{n}{} matrix holding the pairwise distances between observations 
+in training data of size \eqn{n}{} and possibly new data of size \eqn{m}{} to the training data. 
+This will be output only if \code{data} but not \code{distmat} is given in the input.
+\end{ldescription}
+\end{Value}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{GetDistPrfl}{GetDistPrfl}} and \code{\LinkA{GetTpRankFromDistPrfl}{GetTpRankFromDistPrfl}}.
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+d <- 2
+n <- 10
+m <- 5
+data <- matrix( rnorm( n * d ), ncol = d )
+newdata <- matrix( rnorm( m * d ), ncol = d )
+distmat <- as.matrix( stats::dist( rbind(data,newdata) ) )[, 1:n, drop=FALSE]
+## with input distmat
+res <- GetTpRank( distmat = distmat )
+## Or with input data and newdata
+res2 <- GetTpRank( data = data, newdata = newdata )
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{GetTpRankFromDistPrfl}{Compute transport ranks from distance profiles}{GetTpRankFromDistPrfl}
+%
+\begin{Description}\relax
+Compute transport ranks based on the distance profiles represented by quantile functions. 
+For \eqn{x = X_i}{} within the training data \eqn{\{X_i\}_{i=1}^{n}}{}, 
+the transport rank of \eqn{x}{} is estimated by comparing the distance profile of \eqn{x}{} with 
+the distance profiles of \eqn{\{X_j\}_{j\neq i}}{}.
+For a new \eqn{x}{} out of the training data, 
+the transport rank of \eqn{x}{} is estimated by comparing the distance profile of \eqn{x}{} with 
+the distance profiles of \eqn{\{X_j\}_{j=1}^{n}}{}.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+GetTpRankFromDistPrfl(qDistPrfl, n, fun = expit)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{qDistPrfl}] A list of two fields, \code{x} and \code{ymat}, holding the quantile functions 
+corresponding to the distance profiles for each observation in training data and possibly new data. 
+\begin{description}
+
+\item[x] A vector holding the (common) support grid of \eqn{(n+m)}{} quantile functions, 
+in a strictly increasing order between 0 and 1.
+\item[ymat] A matrix with \eqn{(n+m)}{} rows, each row holding the values of the 
+quantile function for one data point.
+
+\end{description}
+
+Here, \eqn{n}{} is the size of the sample with respect to which distance profiles 
+have been obtained and \eqn{m}{} is the size of the new sample in addition 
+distance profiles have been obtained with respect to the sample of size \eqn{n}{}.
+
+\item[\code{n}] The size of the sample with respect to which distance profiles have been obtained, 
+i.e. \eqn{n}{} in the explanation of \code{qDistPrfl}. Default: \code{nrow(qDistPrfl\$ymat)}.
+
+\item[\code{fun}] A function giving the monotonic transformation applied for certain purpose, 
+e.g., making ranks lying between 0 and 1. Default: \code{\LinkA{expit}{expit}}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The argument \code{qDistPrfl} can be obtained by using \code{\LinkA{GetDistPrfl}{GetDistPrfl}} 
+with \code{type = 'qf'} or \code{type = 'all'}, and the field named \code{'qf'} 
+in the output list yields input of \code{qDistPrfl}.
+\end{Details}
+%
+\begin{Value}
+A vector holding the transport ranks.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+d <- 2
+n <- 10
+m <- 5
+data <- matrix( rnorm( n * d ), ncol = d )
+newdata <- matrix( rnorm( m * d ), ncol = d )
+distmat <- as.matrix( stats::dist( rbind(data,newdata) ) )[, 1:n, drop=FALSE]
+profile <- GetDistPrfl( distmat = distmat )
+res <- GetTpRankFromDistPrfl( qDistPrfl = profile$qf, n = n )
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{l2metric}{\eqn{L\textasciicircum{}2}{} metric between square integrable functions.}{l2metric}
+%
+\begin{Description}\relax
+\eqn{L^2}{} metric between square integrable functions.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+l2metric(x, y, sup)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x, y}] Vectors holding the values of two functions evaluated on \code{sup}.
+
+\item[\code{sup}] Support grid.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The \eqn{L^2}{} metric between the two functions.
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{MakeObjMdsPlot}{Make an object MDS plot}{MakeObjMdsPlot}
+%
+\begin{Description}\relax
+Make a plot of 2-dimensional classical metric multidimensional scaling of the 
+data based on the pairwise distance matrix or a scatterplot of 2-dimensional Euclidean data.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+MakeObjMdsPlot(
+  distmat,
+  data,
+  color_by,
+  nGroup,
+  shape_by = NULL,
+  shape = 3,
+  id,
+  id_size = 3,
+  xlab = "Coordinate 1",
+  ylab = "Coordinate 2",
+  colorlab = NULL,
+  shapelab = NULL,
+  use_default_colors = TRUE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{distmat}] An \eqn{n}{}-by-\eqn{n}{} symmetric matrix holding the pairwise distances between observations.
+
+\item[\code{data}] An \eqn{n}{}-by-2 matrix or data frame holding the data; 
+This is only applicable for 2-dimensional Euclidean data and overrides \code{distmat} if there is a proper input.
+
+\item[\code{color\_by}] A vector of length \eqn{n}{} holding the variable according to which 
+colors are assigned to each point. If missing, all points will be in black.
+
+\item[\code{nGroup}] Number of groups for optional grouping according to \code{color\_by}. 
+If given, the sample is divided into \code{nGroup} groups according to quantiles of \code{color\_by}, 
+which should be numeric in this case; the \eqn{i}{}-th group contains the 
+points with the corresponding value in \code{color\_by} falling in 
+\eqn{( q_{1-i/\code{nGroup}}, q_{1-(i-1)/\code{nGroup}} ] }{}, 
+except for \eqn{i=\code{nGroup}}{}, for which the corresponding interval is \eqn{[ q_{0}, q_{1/\code{nGroup}} ]}{}. 
+Here, \eqn{q_{\alpha}}{} is the \eqn{\alpha}{}-quantile of \code{color\_by}, given by \code{quantile(color\_by,alpha)}.
+
+\item[\code{shape\_by}] A vector of length \eqn{n}{} holding the variable according to which 
+shapes are assigned to each point. Default: \code{NULL}.
+
+\item[\code{shape}] Shape of points when \code{shape\_by} is \code{NULL}. Default: 3. 
+See \code{\LinkA{geom\_point}{geom.Rul.point}} for details.
+
+\item[\code{id}] A vector of length \eqn{n}{} holding the label of each point. 
+Default: \code{rownames(data)} if \code{data} is given and 
+\code{rownames(distmat)} otherwise.
+
+\item[\code{id\_size}] Size of the text labels of points. Default: 3.
+
+\item[\code{xlab, ylab}] The labels of x-axis and y-axis. Default: \code{'Coordinate 1'} and \code{'Coordinate 2'}.
+
+\item[\code{colorlab}] The label of the color variable when \code{color\_by} is given. Default: \code{NULL}.
+
+\item[\code{shapelab}] The label of the shape variable when \code{shape\_by} is given. Default: \code{NULL}.
+
+\item[\code{use\_default\_colors}] Logical, whether to use default colors when \code{color\_by} is given. Default: \code{TRUE}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A ggplot object.
+\end{Value}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{GetTpRank}{GetTpRank}}, \code{\LinkA{MakePrflMdsPlot}{MakePrflMdsPlot}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+n <- 100
+p <- 2
+set.seed(1)
+data <- matrix( rnorm( n * p ), ncol = p )
+res <- GetTpRank( data = data )
+pl <- MakeObjMdsPlot( data = data, color_by = res$rank, nGroup = 10 )
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{MakePrflMdsPlot}{Make a profile MDS plot}{MakePrflMdsPlot}
+%
+\begin{Description}\relax
+Make a plot of 2-dimensional classical metric multidimensional scaling of the 
+data based on the distance profiles with respect to \eqn{2}{}-Wasserstein metric.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+MakePrflMdsPlot(qDistPrfl, color_by, nGroup, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{qDistPrfl}] A list of two fields, \code{x} and \code{ymat}, holding the quantile functions 
+corresponding to the distance profiles for each observation in the data. 
+\begin{description}
+
+\item[x] A vector holding the (common) support grid of \eqn{n}{} quantile functions, 
+in a strictly increasing order between 0 and 1.
+\item[ymat] A matrix with \eqn{n}{} rows, each row holding the values of the 
+quantile function for one data point.
+
+\end{description}
+
+
+\item[\code{color\_by}] A vector of length \eqn{n}{} holding the variable according to which 
+colors are assigned to each point. Default: transport ranks computed based on \code{qDistPrfl}.
+
+\item[\code{nGroup}] Number of groups for optional grouping according to \code{color\_by}. 
+If given, the sample is divided into \code{nGroup} groups according to quantiles of \code{color\_by}, 
+which should be numeric in this case; the \eqn{i}{}-th group contains the 
+points with the corresponding value in \code{color\_by} falling in 
+\eqn{( q_{1-i/\code{nGroup}}, q_{1-(i-1)/\code{nGroup}} ] }{}, 
+except for \eqn{i=\code{nGroup}}{}, for which the corresponding interval is \eqn{[ q_{0}, q_{1/\code{nGroup}} ]}{}. 
+Here, \eqn{q_{\alpha}}{} is the \eqn{\alpha}{}-quantile of \code{color\_by}, given by \code{quantile(color\_by,alpha)}. 
+Default: 10 if the sample size \eqn{n}{} is larger than 10 and \eqn{n}{} otherwise.
+
+\item[\code{...}] Other arguments of \code{\LinkA{MakeObjMdsPlot}{MakeObjMdsPlot}}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A ggplot object.
+\end{Value}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{GetTpRank}{GetTpRank}}, \code{\LinkA{MakeObjMdsPlot}{MakeObjMdsPlot}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+n <- 100
+p <- 2
+set.seed(1)
+data <- matrix( rnorm( n * p ), ncol = p )
+res <- GetTpRank( data = data )
+pl <- MakePrflMdsPlot( qDistPrfl = res$profile$qf, color_by = res$rank, nGroup = 10 )
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{prflHomTest}{Perform two-sample homogeneity test for random objects}{prflHomTest}
+%
+\begin{Description}\relax
+Perform two-sample test for random objects based on comparing the distance profiles.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+prflHomTest(distmat, n, nRegGrid = 101, nPerm = 999)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{distmat}] An \eqn{(n+m)}{}-by-\eqn{(n+m)}{} matrix holding the pairwise distances between observations 
+in the two samples of sizes \eqn{n}{} and \eqn{m}{}, respectively.
+
+\item[\code{n}] Size of the first sample.
+
+\item[\code{nRegGrid}] Number of equidistant grid points from the minimum to the maximum of all pairwise distances,
+on which the integrals of difference between distance profiles will be taken. Default: 101.
+
+\item[\code{nPerm}] Number of permutations. Default: 999.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The \eqn{p}{}-value based on permutations.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+n <- m <- 50
+data <- rep( rnorm(n,0,1), 2 )
+distmat <- abs( matrix( data, nr = n+m, nc = n+m ) - matrix( data, nr = n+m, nc = n+m, byrow = TRUE ) )
+pval <- prflHomTest( distmat = distmat, n = n )
+\end{ExampleCode}
+\end{Examples}
+\printindex{}
+\end{document}
